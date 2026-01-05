@@ -3,40 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALERTAS OPERATIVAS TULANCINGO 2025</title>
+    <title>REPORTE CRÍTICO TULANCINGO 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
         :root { --peligro: #ef4444; --advertencia: #f59e0b; --primario: #001529; }
-        body { background: #0a0a0a; font-family: 'JetBrains Mono', monospace; color: white; padding-bottom: 50px; }
+        body { background: #070707; font-family: 'JetBrains Mono', monospace; color: white; padding-bottom: 50px; }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        
         .tarjeta-alerta { 
-            background: rgba(239, 68, 68, 0.05); 
-            border: 1px solid rgba(239, 68, 68, 0.2); 
+            background: rgba(239, 68, 68, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
             border-radius: 1.5rem; 
             padding: 2rem; 
             transition: all 0.3s ease; 
         }
-        .tarjeta-alerta:hover { border-color: var(--peligro); background: rgba(239, 68, 68, 0.1); }
-        
-        .barra-critica { background: linear-gradient(90deg, #ef4444 0%, #7f1d1d 100%); }
-        .texto-peligro { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-        
-        .scroll-rojo::-webkit-scrollbar { width: 5px; }
-        .scroll-rojo::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 10px; }
-        
-        .badge-bajo { background: #ef4444; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
+        .tarjeta-critica {
+            border-left: 4px solid var(--peligro);
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+        }
+        .texto-peligro { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .badge-rojo { background: #ef4444; color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: 900; }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
     <header class="text-center mb-12">
-        <div class="inline-block bg-red-600 text-white text-[10px] px-4 py-1 rounded-full font-black mb-4 animate-pulse uppercase">Atención: Análisis de Riesgos</div>
-        <h1 class="font-orbitron text-4xl md:text-5xl italic texto-peligro mb-2 uppercase">FOCOS ROJOS 2025</h1>
-        <p class="text-slate-400 tracking-[0.3em] text-[10px] font-bold uppercase">Llanterama Tulancingo • Áreas de Oportunidad Críticas</p>
+        <div class="inline-block border border-red-600 text-red-600 text-[10px] px-4 py-1 rounded-full font-black mb-4 uppercase tracking-[0.3em]">Auditoría de Ventas 2025</div>
+        <h1 class="font-orbitron text-4xl md:text-5xl italic texto-peligro mb-2 uppercase">FOCOS ROJOS: EQUIPO CLAVE</h1>
+        <p class="text-slate-500 tracking-[0.2em] text-[10px] font-bold uppercase italic">Análisis exclusivo: Onesimo, Miguel, Ruben, CS Rio, CS Mayoreo, Tizayuca, Sahagun</p>
     </header>
 
     <div id="contenedor-principal" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -44,106 +40,121 @@
 
     <script>
         const URL_DATOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRA2Ijt1TI5_APzSJNjdlGF1_Jex0-n3iTiy8R996VR6PNx6V7tM8xO8u3sFKwp2A/pub?gid=1217270027&single=true&output=csv';
+        
+        // Filtro estricto de vendedores solicitados
+        const VENDEDORES_OBJETIVO = [
+            "ONESIMO", "MIGUEL", "RUBEN", 
+            "CS RIO MAYOREO", "CS MAYOREO", 
+            "TIZAYUCA (CELENE)", "CS CD SAHAGUN MAYOREO"
+        ];
 
         async function cargar() {
             const res = await fetch(URL_DATOS + '&t=' + Date.now());
             const texto = await res.text();
-            Papa.parse(texto, { header: true, complete: (res) => procesar(res.data.filter(r => r.AÑO == "2025")) });
+            Papa.parse(texto, { header: true, complete: (res) => {
+                const datosFiltrados = res.data.filter(r => 
+                    r.AÑO == "2025" && 
+                    VENDEDORES_OBJETIVO.includes(r.VENDEDOR.toUpperCase().trim())
+                );
+                procesar(datosFiltrados);
+            }});
         }
 
         function procesar(datos) {
             const n = (v) => parseFloat(String(v || "0").replace(/[^0-9.-]+/g,"")) || 0;
             const f = (v) => Math.round(v).toLocaleString('es-MX');
 
-            const rank = (campo, valor) => {
+            const rank = (campo, valor, reverse = false) => {
                 const obj = {};
-                datos.forEach(r => obj[r[campo]] = (obj[r[campo]] || 0) + n(r[valor]));
-                return Object.entries(obj).sort((a,b) => a[1] - b[1]); // Orden ascendente (los más bajos primero)
+                datos.forEach(r => {
+                    const key = r[campo].toUpperCase().trim();
+                    obj[key] = (obj[key] || 0) + n(r[valor]);
+                });
+                return Object.entries(obj).sort((a,b) => reverse ? b[1] - a[1] : a[1] - b[1]);
             };
 
-            const vendedoresBajos = rank('VENDEDOR', 'IMPORTE NETO');
-            const zonasBajas = rank('ZONA', 'IMPORTE NETO');
+            const vtasBajas = rank('VENDEDOR', 'IMPORTE NETO');
             const mesesBajos = rank('MES', 'IMPORTE NETO');
+            const zonasDebiles = rank('ZONA', 'IMPORTE NETO');
             
-            // Rankings inversos para productos (detectar quién no está vendiendo líneas secundarias)
-            const bajosLub = rank('VENDEDOR', 'REAL LUBRICANTES');
-            const bajosFilt = rank('VENDEDOR', 'REAL FILTROS');
-            const bajosMoto = rank('VENDEDOR', 'REAL MOTOBATERIAS');
+            // Rezagos por producto
+            const rezagoLub = rank('VENDEDOR', 'REAL LUBRICANTES').slice(0, 4);
+            const rezagoFilt = rank('VENDEDOR', 'REAL FILTROS').slice(0, 4);
+            const rezagoMoto = rank('VENDEDOR', 'REAL MOTOBATERIAS').slice(0, 4);
 
             const html = `
-                <div class="tarjeta-alerta border-t-4 border-t-red-600">
-                    <h3 class="font-black uppercase italic mb-6 flex justify-between text-red-500">Meses Críticos <i class="fas fa-arrow-down"></i></h3>
-                    <div class="space-y-3">
-                        ${mesesBajos.slice(0, 3).map((m, i) => `
-                            <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
-                                <span class="font-bold uppercase">${m[0]}</span>
-                                <span class="text-red-500 font-black">$${f(m[1])}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <p class="text-[9px] text-slate-500 mt-4 italic">* Estos meses requieren una revisión de las campañas promocionales aplicadas.</p>
-                </div>
-
-                <div class="tarjeta-alerta border-t-4 border-t-red-600">
-                    <h3 class="font-black uppercase italic mb-6 flex justify-between text-red-500">Bajo Rendimiento <i class="fas fa-user-slash"></i></h3>
-                    <div class="space-y-3 max-h-60 overflow-y-auto scroll-rojo pr-2">
-                        ${vendedoresBajos.map((v, i) => `
-                            <div class="flex justify-between items-center text-xs border-b border-white/5 pb-2">
-                                <span>${v[0]}</span>
+                <div class="tarjeta-alerta tarjeta-critica">
+                    <h3 class="font-black uppercase italic mb-6 text-red-500 text-sm flex justify-between">Rezago en Facturación <i class="fas fa-chart-line-down"></i></h3>
+                    <div class="space-y-4">
+                        ${vtasBajas.map((v, i) => `
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-[11px] font-bold">${v[0]}</span>
                                 <div class="text-right">
-                                    <span class="block font-black">$${f(v[1])}</span>
-                                    ${i < 3 ? '<span class="badge-bajo">CRÍTICO</span>' : ''}
+                                    <span class="block text-xs font-black text-red-400">$${f(v[1])}</span>
+                                    ${i < 2 ? '<span class="badge-rojo">BAJO NIVEL</span>' : ''}
                                 </div>
                             </div>
                         `).join('')}
                     </div>
                 </div>
 
-                <div class="tarjeta-alerta border-t-4 border-t-red-600">
-                    <h3 class="font-black uppercase italic mb-6 flex justify-between text-red-500">Zonas Vulnerables <i class="fas fa-exclamation-triangle"></i></h3>
-                    <div class="space-y-3">
-                        ${zonasBajas.slice(0, 3).map((z, i) => `
-                            <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
-                                <span class="uppercase font-bold">${z[0]}</span>
-                                <span class="text-red-400 font-black">$${f(z[1])}</span>
+                <div class="tarjeta-alerta">
+                    <h3 class="font-black uppercase italic mb-6 text-red-500 text-sm">Meses de Menor Impacto</h3>
+                    <div class="space-y-4">
+                        ${mesesBajos.slice(0, 4).map(m => `
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2 text-xs">
+                                <span class="uppercase">${m[0]}</span>
+                                <span class="font-black text-red-400">$${f(m[1])}</span>
                             </div>
                         `).join('')}
                     </div>
-                    <p class="text-[9px] text-slate-500 mt-4 uppercase font-bold tracking-tighter text-center">Zonas con menor penetración de mercado</p>
+                    <p class="text-[9px] text-slate-500 mt-6 italic">Meses donde el equipo de mayoreo presentó debilidad operativa.</p>
+                </div>
+
+                <div class="tarjeta-alerta">
+                    <h3 class="font-black uppercase italic mb-6 text-red-500 text-sm">Zonas Desatendidas</h3>
+                    <div class="space-y-4">
+                        ${zonasDebiles.slice(0, 4).map(z => `
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2 text-xs">
+                                <span class="uppercase font-bold text-slate-300">${z[0]}</span>
+                                <span class="font-black text-white">$${f(z[1])}</span>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
 
                 <div class="tarjeta-alerta lg:col-span-2">
-                    <h3 class="font-black uppercase italic mb-6 text-red-500 border-b border-red-900/30 pb-4 italic">Vendedores con rezago en líneas clave (Venta $0 o mínima)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <h3 class="font-black uppercase italic mb-8 text-red-500 border-b border-red-900/30 pb-4 flex justify-between">
+                        Falta de Enfoque en Líneas Secundarias <span class="text-[10px] bg-red-600/20 px-2 py-1 rounded text-red-400">PIEZAS REALES</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
-                            <p class="text-[10px] text-orange-400 font-black uppercase mb-3">Rezago Lubricantes</p>
-                            ${bajosLub.slice(0, 3).map(p => `<div class="flex justify-between text-[10px] mb-1 opacity-70"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
+                            <p class="text-[10px] text-orange-400 font-bold uppercase mb-4 tracking-widest border-l-2 border-orange-400 pl-2">Mínimo Lubricantes</p>
+                            ${rezagoLub.map(p => `<div class="flex justify-between text-[11px] mb-2 opacity-80 italic"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
                         </div>
                         <div>
-                            <p class="text-[10px] text-green-400 font-black uppercase mb-3">Rezago Filtros</p>
-                            ${bajosFilt.slice(0, 3).map(p => `<div class="flex justify-between text-[10px] mb-1 opacity-70"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
+                            <p class="text-[10px] text-green-400 font-bold uppercase mb-4 tracking-widest border-l-2 border-green-400 pl-2">Mínimo Filtros</p>
+                            ${rezagoFilt.map(p => `<div class="flex justify-between text-[11px] mb-2 opacity-80 italic"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
                         </div>
                         <div>
-                            <p class="text-[10px] text-blue-400 font-black uppercase mb-3">Rezago Motos</p>
-                            ${bajosMoto.slice(0, 3).map(p => `<div class="flex justify-between text-[10px] mb-1 opacity-70"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
+                            <p class="text-[10px] text-blue-400 font-bold uppercase mb-4 tracking-widest border-l-2 border-blue-400 pl-2">Mínimo Motos</p>
+                            ${rezagoMoto.map(p => `<div class="flex justify-between text-[11px] mb-2 opacity-80 italic"><span>${p[0]}</span><b>${p[1]} pz</b></div>`).join('')}
                         </div>
                     </div>
                 </div>
 
-                <div class="tarjeta-alerta bg-red-900/20 border-red-500">
-                    <h3 class="font-black uppercase italic mb-4 text-red-500">Puntos de Cuidado <i class="fas fa-biohazard"></i></h3>
-                    <div class="text-[11px] space-y-4">
-                        <p><b class="text-red-400">● Fuga de Clientes:</b> El rendimiento de la zona <b>${zonasBajas[0][0]}</b> indica que podríamos estar perdiendo clientes frente a la competencia o falta de frecuencia de visita.</p>
-                        <p><b class="text-red-400">● Dependencia de Baterías:</b> Se detecta que los vendedores al final del ranking dependen 100% de acumuladores, ignorando líneas de alta rentabilidad como filtros.</p>
-                        <p><b class="text-red-400">● Meses Muertos:</b> <b>${mesesBajos[0][0]}</b> presenta números que no cubren los gastos operativos proyectados por zona.</p>
+                <div class="tarjeta-alerta border-red-500/30">
+                    <h3 class="font-black uppercase italic mb-4 text-red-500 text-sm italic">Observaciones de Junta</h3>
+                    <div class="text-[10px] space-y-4 text-slate-400">
+                        <p><b class="text-white">● Inconsistencia en Mayoreo:</b> Los centros de servicio (CS) muestran una fluctuación alarmante en meses como <b>${mesesBajos[0][0]}</b>.</p>
+                        <p><b class="text-white">● Abandono de Línea:</b> Vendedores como <b>${rezagoLub[0][0]}</b> presentan nulo desplazamiento en lubricantes, perdiendo rentabilidad.</p>
+                        <p><b class="text-white">● Riesgo Tizayuca/Sahagún:</b> La dispersión geográfica está afectando los números de filtros comparado con el potencial de la zona.</p>
                     </div>
                 </div>
 
-                <div class="tarjeta-alerta lg:col-span-3 border-dashed border-red-500">
-                    <h4 class="text-center text-red-500 font-black uppercase tracking-widest mb-4 italic italic text-xl">Plan de Acción Sugerido</h4>
-                    <p class="text-center text-sm text-slate-300 italic">
-                        "Los números indican una disparidad peligrosa en la fuerza de ventas de Tulancingo. No se puede permitir que el 2025 avance con zonas en números rojos. Se recomienda una intervención directa con el Top 3 de bajo rendimiento para ajustar rutas y establecer cuotas obligatorias en líneas de lubricantes y filtros, de lo contrario, la rentabilidad anual se verá comprometida por el arrastre de estas zonas pasivas."
-                    </p>
+                <div class="tarjeta-alerta lg:col-span-3 border-dashed border-red-500/50 text-center">
+                    <p class="text-lg italic text-red-400 font-bold mb-2">"El equipo de Mayoreo y Centros de Servicio es el motor de Tulancingo; cualquier rezago aquí es una pérdida crítica para el 2025."</p>
+                    <p class="text-[9px] uppercase tracking-[0.5em] text-slate-500">Acción Requerida: Homologación de cuotas por vendedor y zona</p>
                 </div>
             `;
             document.getElementById('contenedor-principal').innerHTML = html;
