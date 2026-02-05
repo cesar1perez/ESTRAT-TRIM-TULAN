@@ -13,7 +13,6 @@
         body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; }
         h1, h2, h3, .font-heading { font-family: 'Montserrat', sans-serif; }
         
-        /* Diseño de Tarjetas */
         .card-vendedor { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 5px solid var(--navy-deep); margin-bottom: 1.5rem; overflow: hidden; }
         .barra-bg { background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; }
         .barra-fill { height: 100%; transition: width 1s ease-in-out; }
@@ -28,28 +27,25 @@
         .flecha-btn { transition: transform 0.3s ease; }
         .abierto .flecha-btn { transform: rotate(180deg); }
 
-        /* Estilos del Modal */
         #modal-reglas { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; padding: 20px; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 24px; padding: 24px; position: relative; border-top: 8px solid var(--blue-accent); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
     <header class="bg-slate-900 text-white py-6 px-4 shadow-lg border-b-4 border-blue-600 sticky top-0 z-50 text-center">
         <h1 class="text-xl font-black uppercase tracking-tighter">Llanterama <span class="text-blue-400">Tulancingo</span></h1>
-        <p class="text-[10px] font-bold text-blue-200 uppercase tracking-[0.2em] mt-1">Control de Estrategias 2026</p>
+        <p class="text-[10px] font-bold text-blue-200 uppercase tracking-[0.2em] mt-1 italic">Estrategia Trimestral Acumulada</p>
     </header>
 
     <nav class="container mx-auto px-4 mt-6 max-w-5xl">
         <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-            <button class="flex-1 min-w-[140px] bg-blue-600 text-white font-black py-3 rounded-xl shadow-md border-b-4 border-blue-800 uppercase text-[10px] tracking-widest">
-                ENE - FEB - MAR
+            <button id="btn-t1" onclick="filterData('T1')" class="flex-1 min-w-[140px] bg-blue-600 text-white font-black py-3 rounded-xl shadow-md border-b-4 border-blue-800 uppercase text-[10px] tracking-widest transition-all">
+                T1: ENE - FEB - MAR
             </button>
             <button class="flex-1 min-w-[140px] bg-slate-200 text-slate-400 font-bold py-3 rounded-xl uppercase text-[10px] tracking-widest cursor-not-allowed">
-                ABR - MAY - JUN
-            </button>
-            <button class="flex-1 min-w-[140px] bg-slate-200 text-slate-400 font-bold py-3 rounded-xl uppercase text-[10px] tracking-widest cursor-not-allowed">
-                JUL - AGO - SEP
+                T2: ABR - MAY - JUN
             </button>
         </div>
     </nav>
@@ -65,7 +61,7 @@
                 <i class="fas fa-exclamation-circle text-yellow-600 mt-1 text-lg"></i>
                 <div>
                     <p class="uppercase text-[10px] tracking-widest text-slate-500 mb-1 font-black">Aviso de Cumplimiento</p>
-                    Para activar el pago de bonos, es <span class="text-red-700 underline font-black">indispensable el cumplimiento del 100%</span> en la línea de motos.
+                    Para activar el pago de bonos, es <span class="text-red-700 underline font-black">indispensable el cumplimiento del 100%</span> en la línea de motos al cierre del trimestre.
                 </div>
             </div>
         </div>
@@ -74,29 +70,22 @@
     <div id="modal-reglas" onclick="cerrarModal()">
         <div class="modal-content shadow-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black text-slate-900 uppercase">Bonos del Trimestre</h2>
+                <h2 class="text-xl font-black text-slate-900 uppercase">Bonos T1 2026</h2>
                 <button onclick="cerrarModal()" class="text-slate-400 text-2xl"><i class="fas fa-times"></i></button>
             </div>
             <div class="space-y-6">
                 <div class="flex gap-4">
-                    <div class="bg-blue-100 text-blue-600 h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-car-battery"></i></div>
+                    <div class="bg-blue-100 text-blue-600 h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-motorcycle"></i></div>
                     <div>
-                        <p class="font-black text-slate-800 uppercase text-xs">Acumuladores</p>
-                        <p class="text-sm text-slate-600"><span class="font-bold text-blue-600">$15.00 adicional</span> por cada batería vendida a cliente nuevo.</p>
+                        <p class="font-black text-slate-800 uppercase text-xs">Línea Motos</p>
+                        <p class="text-sm text-slate-600">Bonificación basada en cumplimiento trimestral acumulado.</p>
                     </div>
                 </div>
                 <div class="flex gap-4">
-                    <div class="bg-orange-100 text-orange-600 h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-motorcycle"></i></div>
+                    <div class="bg-green-100 text-green-600 h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-user-plus"></i></div>
                     <div>
-                        <p class="font-black text-slate-800 uppercase text-xs">Motobaterías</p>
-                        <p class="text-sm text-slate-600"><span class="font-bold text-orange-600">$5.00 adicionales</span> llegando al 100% de tu objetivo.</p>
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <div class="bg-yellow-100 text-yellow-600 h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-oil-can"></i></div>
-                    <div>
-                        <p class="font-black text-slate-800 uppercase text-xs">Lubricantes</p>
-                        <p class="text-sm text-slate-600">Hasta <span class="font-bold text-yellow-600">$1.00 por litro</span> para clientes seleccionados.</p>
+                        <p class="font-black text-slate-800 uppercase text-xs">Clientes Nuevos</p>
+                        <p class="text-sm text-slate-600">Pago acumulado de <span class="font-bold text-green-600">$15.00</span> por unidad vendida en esta categoría.</p>
                     </div>
                 </div>
             </div>
@@ -110,6 +99,7 @@
 
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTaU2EOJQU2nQ56NwMSDAIVaAkFykM_oesKx3ZnRxZDkLjXpL10HpcNmNbrX7ZDOq4X8RendztUPQvB/pub?gid=1559244084&single=true&output=csv&v=' + Date.now();
+        let rawData = [];
 
         function abrirModal() { document.getElementById('modal-reglas').style.display = 'flex'; }
         function cerrarModal() { document.getElementById('modal-reglas').style.display = 'none'; }
@@ -117,8 +107,47 @@
         function init() {
             Papa.parse(CSV_URL, {
                 download: true, header: true, skipEmptyLines: true,
-                complete: (results) => render(results.data)
+                complete: (results) => {
+                    rawData = results.data;
+                    filterData('T1'); // Carga por defecto T1
+                }
             });
+        }
+
+        // --- LÓGICA DE FILTRADO Y SUMATORIA TRIMESTRAL ---
+        function filterData(trimestreSelected) {
+            // 1. Filtramos las filas del trimestre seleccionado
+            const filteredRows = rawData.filter(r => r.TRIMESTRE === trimestreSelected);
+            
+            // 2. Agrupamos por vendedor para sumar acumulados
+            const resumenVendedores = {};
+
+            filteredRows.forEach(row => {
+                const nombre = row.VENDEDOR.trim();
+                if (!nombre || nombre.includes("TOTAL")) return;
+
+                if (!resumenVendedores[nombre]) {
+                    resumenVendedores[nombre] = {
+                        VENDEDOR: nombre,
+                        ZONA: row.ZONA || 'ZONA TULANCINGO',
+                        "OBJ MOTO": cleanNum(row["OBJ MOTO"]), // El objetivo suele ser el mismo, no se suma
+                        "REAL MOTO": 0,
+                        "GANANCIA MOTO": 0,
+                        "ACUM CLIENTES NVO": 0,
+                        "GANANCIA ACUM CLTE NVO": 0,
+                        "TOTAL A GANAR": 0
+                    };
+                }
+
+                // Sumamos los valores reales de cada mes
+                resumenVendedores[nombre]["REAL MOTO"] += cleanNum(row["REAL MOTO"]);
+                resumenVendedores[nombre]["GANANCIA MOTO"] += cleanNum(row["GANANCIA MOTO"]);
+                resumenVendedores[nombre]["ACUM CLIENTES NVO"] += cleanNum(row["ACUM CLIENTES NVO"]);
+                resumenVendedores[nombre]["GANANCIA ACUM CLTE NVO"] += cleanNum(row["GANANCIA ACUM CLTE NVO"]);
+                resumenVendedores[nombre]["TOTAL A GANAR"] += cleanNum(row["TOTAL A GANAR"]);
+            });
+
+            render(Object.values(resumenVendedores));
         }
 
         function cleanNum(val) {
@@ -135,15 +164,15 @@
             return ((r / o) * 100).toFixed(2); 
         }
 
-        function formatCant(val) { return cleanNum(val).toLocaleString(); }
-        function formatMoney(val) { return '$' + cleanNum(val).toLocaleString(); }
+        function formatCant(val) { return Math.round(cleanNum(val)).toLocaleString(); }
+        function formatMoney(val) { return '$' + Math.round(cleanNum(val)).toLocaleString(); }
         function toggleVendedor(index) { document.getElementById(`card-${index}`).classList.toggle('abierto'); }
 
         function render(rows) {
             const container = document.getElementById('grid-vendedores');
             container.innerHTML = '';
+            
             rows.forEach((row, index) => {
-                if (!row.VENDEDOR || row.VENDEDOR.trim() === "" || row.VENDEDOR.includes("TOTAL")) return;
                 const card = document.createElement('div');
                 card.id = `card-${index}`;
                 card.className = 'card-vendedor';
@@ -154,25 +183,26 @@
                                 <i class="fas fa-chevron-down text-slate-500 text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-base font-black text-slate-900 leading-none uppercase tracking-tighter">${row.VENDEDOR.trim()}</h2>
-                                <p class="text-[9px] font-bold text-blue-600 uppercase mt-1 tracking-widest">${row.ZONA || 'ZONA TULANCINGO'}</p>
+                                <h2 class="text-base font-black text-slate-900 leading-none uppercase tracking-tighter">${row.VENDEDOR}</h2>
+                                <p class="text-[9px] font-bold text-blue-600 uppercase mt-1 tracking-widest">${row.ZONA}</p>
                             </div>
                         </div>
                         <div class="bg-green-600 text-white px-4 py-2 rounded-xl text-right shadow-md border-b-4 border-green-800">
-                            <p class="text-[8px] font-bold uppercase opacity-80 leading-none">Total a ganar</p>
+                            <p class="text-[8px] font-bold uppercase opacity-80 leading-none">Total Acumulado</p>
                             <p class="text-lg font-black mt-1 leading-none">${formatMoney(row["TOTAL A GANAR"])}</p>
                         </div>
                     </div>
                     <div class="detalles-wrapper">
                         <div class="detalles-inner px-5 pb-6 bg-slate-50 border-t">
                             <div class="pt-6 space-y-8 max-w-3xl mx-auto">
-                                ${crearFila("Línea Motos", row["OBJ MOTO"], row["REAL MOTO"], row["GANANCIA MOTO"], "bg-blue-600")}
+                                ${crearFila("Línea Motos (Acumulado)", row["OBJ MOTO"], row["REAL MOTO"], row["GANANCIA MOTO"], "bg-blue-600")}
+                                
                                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                                     <div class="flex items-center gap-3">
                                         <div class="bg-slate-100 h-12 w-12 rounded-full flex items-center justify-center"><i class="fas fa-user-plus text-blue-600 text-xl"></i></div>
                                         <div>
-                                            <p class="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">Clientes Nuevos</p>
-                                            <p class="text-2xl font-black text-slate-900 leading-none">${row["ACUM CLIENTES NVO"] || 0}</p>
+                                            <p class="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">Clientes Nuevos T1</p>
+                                            <p class="text-2xl font-black text-slate-900 leading-none">${row["ACUM CLIENTES NVO"]}</p>
                                         </div>
                                     </div>
                                     <div class="text-right border-l pl-4 font-bold">
@@ -195,13 +225,13 @@
                 <div class="space-y-3">
                     <h3 class="text-xs font-black text-slate-800 uppercase border-l-4 border-slate-900 pl-2 tracking-tighter">${titulo}</h3>
                     <div class="grid grid-cols-2 gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm font-bold">
-                        <div><p class="text-[9px] font-bold text-slate-400 mb-1 uppercase">Objetivo</p><p class="text-sm text-slate-500">${formatCant(obj)}</p></div>
-                        <div class="text-right"><p class="text-[9px] font-bold text-slate-400 mb-1 uppercase">Real</p><p class="text-lg text-slate-900">${formatCant(real)}</p></div>
+                        <div><p class="text-[9px] font-bold text-slate-400 mb-1 uppercase">Meta Trimestre</p><p class="text-sm text-slate-500">${formatCant(obj)}</p></div>
+                        <div class="text-right"><p class="text-[9px] font-bold text-slate-400 mb-1 uppercase">Real Acumulado</p><p class="text-lg text-slate-900">${formatCant(real)}</p></div>
                     </div>
                     <div class="barra-bg"><div class="barra-fill ${esMeta ? 'bg-green-500' : colorBarra}" style="width: ${Math.min(parseFloat(p), 100)}%"></div></div>
                     <div class="metric-container shadow-sm">
                         <div class="metric-pct"><p class="text-[8px] uppercase font-bold opacity-80 mb-1">Logro</p><p class="text-lg font-black">${p}%</p></div>
-                        <div class="metric-cash"><p class="text-[8px] uppercase font-bold opacity-80 mb-1">Ganancia</p><p class="text-lg font-black">${formatMoney(ganancia)}</p></div>
+                        <div class="metric-cash"><p class="text-[8px] uppercase font-bold opacity-80 mb-1">Bono Motos</p><p class="text-lg font-black">${formatMoney(ganancia)}</p></div>
                     </div>
                 </div>
             `;
